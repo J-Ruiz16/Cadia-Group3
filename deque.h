@@ -196,3 +196,45 @@ template <typename T> bool Deque<T>::empty(){
 template <typename T> int Deque<T>::size(){
   return totalSize;
 }
+
+template <typename T> void Deque<T>::push_front(const T& value) {
+  if (blockmap[frontB] == 0) { //checks if block is intialized
+      blockmap[frontB] = new T[blockSize]; //allocate new block
+  }
+  if (frontPosition == 0) { 
+      frontB--; //if start of block, move to previous block
+      if (blockmap[frontB] == 0) {
+          blockmap[frontB] = new T[blockSize]; 
+      }
+      frontPosition = blockSize - 1; //insert new element at front
+  }
+  else {
+  frontPosition--; //new element place
+  } 
+  blockmap[frontB][frontPosition] = value; //place new value
+  totalSize++; 
+}
+
+template <typename T> void Deque<T>::push_back(const T& value) {
+  if (blockmap[backB] == 0) {
+      blockmap[backB] = new T[blockSize];
+  }
+  if (backPosition == blockSize - 1) {
+      backB++; //same thing as above but working with the back of the deque rather than front
+      if (blockmap[backB] == 0) {
+          blockmap[backB] = new T[blockSize];
+      }
+      backPosition = -1; //needed to set next increment to 0
+  }
+  backPosition++;
+  blockmap[backB][backPosition] = value;
+  totalSize++;
+}
+
+template <typename T> T& Deque<T>::operator[](int index) {
+  int truePosition = frontPosition + index; //true position of element by adding index and frontposition
+  int blockOffset = truePosition / blockSize; //finds which block element is in with true position and block size
+  int positionInBlock = truePosition % blockSize; //position of element within the block
+  
+  return blockmap[frontB + blockOffset][positionInBlock]; //returns the element in the position of the block
+}
